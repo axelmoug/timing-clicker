@@ -3,10 +3,11 @@
 
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <title>🎯 Попади в зелёную зону!</title>
 
-    <!-- 🔹 ИСПРАВЛЕННАЯ Embedded SVG иконка (512x512) -->
+    <!-- Embedded SVG иконка -->
     <link rel="icon" type="image/svg+xml"
         href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTIiIGhlaWdodD0iNTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8Y2lyY2xlIGN4PSIyNTYiIGN5PSIyNTYiIHI9IjI0MCIgZmlsbD0iIzFFMUEyRSIgc3Ryb2tlPSIjNENDOUYwIiBzdHJva2Utd2lkdGg9IjE2Ii8+CjxjaXJjbGUgY3g9IjI1NiIgY3k9IjI1NiIgcj0iODAiIGZpbGw9IiM0Q0FGNTAiIHN0cm9rZT0ibm9uZSIvPgo8bGluZSB4MT0iMjU2IiB5MT0iMjU2IiB4Mj0iMjU2IiB5Mj0iMTAwIiBzdHJva2U9IiNGRkQ3MDAiIHN0cm9rZS13aWR0aD0iOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+Cjx0ZXh0IHg9IjI1NiIgeT0iNDgwIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iNDAiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjZmZmIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj7QnNC10Lsg0KI8L3RleHQ+Cjwvc3ZnPg==">
 
@@ -15,6 +16,18 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+        }
+
+        html,
+        body {
+            width: 100%;
+            overflow-x: hidden;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            touch-action: manipulation;
         }
 
         body {
@@ -30,34 +43,30 @@
 
         .container {
             text-align: center;
-            max-width: 90vw;
-            width: 450px;
+            width: 100%;
+            max-width: 95vw;
         }
 
         h1 {
-            margin: 15px 0 20px;
-            font-size: 28px;
-            text-shadow: 0 0 10px rgba(76, 201, 240, 0.7);
+            margin: 10px 0 15px;
+            font-size: 24px;
+            text-shadow: 0 0 8px rgba(76, 201, 240, 0.7);
         }
 
         #difficulty {
-            margin: 15px 0;
+            margin: 12px 0;
         }
 
         .diff-btn {
-            padding: 8px 14px;
+            padding: 10px 14px;
             margin: 0 4px;
             background: #4361ee;
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 15px;
-            transition: background 0.2s;
-        }
-
-        .diff-btn:hover {
-            background: #3a56d4;
+            font-size: 16px;
+            min-width: 80px;
         }
 
         .diff-btn.active {
@@ -79,17 +88,17 @@
         }
 
         button {
-            margin-top: 10px;
-            padding: 10px 20px;
-            font-size: 16px;
+            min-height: 56px;
+            margin: 8px 0;
+            padding: 12px 16px;
+            font-size: 18px;
             background: #4361ee;
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             cursor: pointer;
             width: 100%;
-            max-width: 300px;
-            transition: background 0.2s;
+            max-width: 320px;
         }
 
         button:hover:not(:disabled) {
@@ -121,7 +130,7 @@
         </div>
 
         <div id="score">Очки: <span>0</span></div>
-        <canvas id="gameCanvas" width="400" height="400"></canvas>
+        <canvas id="gameCanvas"></canvas>
 
         <button id="clickBtn">НАЖМИ!</button>
         <button id="adBtn" style="display:none;">Смотреть рекламу за +1 попытку</button>
@@ -140,29 +149,24 @@
         let isYandexEnv = false;
         let currentDifficulty = 'easy';
 
-        // Мемные фразы
         const successPhrases = ['Ура!', 'Красава!', 'Точно!'];
         const failPhrases = ['Эх...', 'Мимо!', 'Ой-ой!'];
 
-        // Функция произнесения фразы
         function speak(text) {
             if ('speechSynthesis' in window) {
                 const utterance = new SpeechSynthesisUtterance(text);
                 utterance.lang = 'ru-RU';
                 utterance.rate = 1.0;
-                utterance.pitch = 1.0;
                 speechSynthesis.speak(utterance);
             }
         }
 
-        // Инициализация Yandex SDK
         YaGames.init().then(ysdk => {
             yandexSDK = ysdk;
             isYandexEnv = true;
-            console.log('Yandex SDK инициализирован');
             ysdk.features.LoadingAPI?.ready();
         }).catch(err => {
-            console.warn('Yandex SDK не доступен (локальный запуск)', err);
+            console.warn('Yandex SDK не доступен');
         });
 
         // ============ НАСТРОЙКИ СЛОЖНОСТИ ============
@@ -179,7 +183,7 @@
         let angle = 0;
         let speed = 0.03;
 
-        // ============ ЭЛЕМЕНТЫ ============
+        // ============ CANVAS ============
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         const scoreEl = document.querySelector('#score span');
@@ -188,6 +192,17 @@
         const adBtn = document.getElementById('adBtn');
         const shareBtn = document.getElementById('shareBtn');
         const leaderboardBtn = document.getElementById('leaderboardBtn');
+
+        // Адаптация Canvas под экран
+        function resizeCanvas() {
+            const maxWidth = Math.min(window.innerWidth - 20, 500);
+            const maxHeight = window.innerHeight * 0.6;
+            const size = Math.min(maxWidth, maxHeight, 400);
+            canvas.width = size;
+            canvas.height = size;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
 
         // ============ ВЫБОР СЛОЖНОСТИ ============
         document.querySelectorAll('.diff-btn').forEach(btn => {
@@ -204,13 +219,13 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             const centerX = canvas.width / 2;
             const centerY = canvas.height / 2;
-            const radius = 180;
+            const radius = canvas.width * 0.45;
 
             // Зелёная зона
             ctx.beginPath();
             ctx.arc(centerX, centerY, radius, -Math.PI / 6, Math.PI / 6);
             ctx.strokeStyle = '#4CAF50';
-            ctx.lineWidth = 30;
+            ctx.lineWidth = radius * 0.15;
             ctx.stroke();
 
             // Стрелка
@@ -315,7 +330,7 @@
                 await yandexSDK.adv.showRewardedVideo();
                 return true;
             } catch (error) {
-                alert('Реклама недоступна. Попробуйте позже.');
+                alert('Реклама недоступна.');
                 return false;
             }
         }
@@ -327,7 +342,7 @@
                 await yandexSDK.getLeaderboards().setScore('global_score', score);
                 await yandexSDK.getLeaderboards().setScore('friends_score', score);
             } catch (e) {
-                console.warn('Не удалось сохранить в лидерборд:', e);
+                console.warn('Лидерборд:', e);
             }
         }
 
@@ -339,15 +354,14 @@
             try {
                 await yandexSDK.getLeaderboards().show('global_score');
             } catch (e) {
-                alert('Не удалось открыть таблицу рекордов.');
+                alert('Ошибка лидерборда.');
             }
         }
 
         // ============ ПОДЕЛИТЬСЯ ============
         async function shareResult() {
             if (!isYandexEnv || !yandexSDK) {
-                const msg = `Мой счёт: ${score}! Сыграй сам: https://axelmoug.github.io/timing-clicker/`;
-                alert(msg);
+                alert(`Мой счёт: ${score}! Сыграй сам: https://axelmoug.github.io/timing-clicker/`);
                 return;
             }
             try {
