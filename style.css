@@ -1,42 +1,111 @@
-body {
+* {
     margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    overflow-x: hidden;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    touch-action: manipulation;
+}
+
+body {
     background: #1a1a2e;
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
     color: white;
+    padding: 10px;
 }
 
 .container {
     text-align: center;
-    padding: 20px;
+    width: 100%;
+    max-width: 95vw;
+}
+
+h1 {
+    margin: 10px 0 15px;
+    font-size: 24px;
+    text-shadow: 0 0 8px rgba(76, 201, 240, 0.7);
+}
+
+#difficulty {
+    margin: 12px 0;
+}
+
+.diff-btn {
+    padding: 10px 14px;
+    margin: 0 4px;
+    background: #4361ee;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    min-width: 80px;
+}
+
+.diff-btn.active {
+    background: #ff6b6b;
+}
+
+#score {
+    font-size: 20px;
+    margin: 10px 0;
+    font-weight: bold;
 }
 
 #gameCanvas {
     border: 2px solid #4cc9f0;
     border-radius: 50%;
     background: #16213e;
+    width: 80vmin;
+    height: 80vmin;
+    max-width: 400px;
+    max-height: 400px;
+    display: block;
+    margin: 15px auto;
 }
 
 button {
-    margin-top: 15px;
-    padding: 10px 20px;
+    min-height: 56px;
+    margin: 8px 0;
+    padding: 14px 16px;
     font-size: 18px;
     background: #4361ee;
     color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 12px;
     cursor: pointer;
+    width: 100%;
+    max-width: 320px;
+    transition: background 0.2s ease;
 }
 
-button:hover {
+button:hover:not(:disabled),
+button:focus:not(:disabled) {
     background: #3a56d4;
+    outline: none;
+}
+
+button:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
 }
 
 #message {
     margin-top: 15px;
     font-size: 18px;
     min-height: 24px;
+    line-height: 1.4;
 }
